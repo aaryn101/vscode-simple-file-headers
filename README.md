@@ -1,65 +1,62 @@
-# simple-file-headers README
+# Simple File headers
 
-This is the README for your extension "simple-file-headers". After writing up a brief description, we recommend including the following sections.
+The `Simple File Headers` extension makes it easy to create file headers and add them to the current document.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+* per-language, or global, file headers
+* variable substitution
 
-For example if there is an image subfolder under your extension project workspace:
+## Defining Templates
 
-\!\[feature X\]\(images/feature-x.png\)
+Templates are defined using the `simplefileheaders.templates` setting. Here is an example:
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+```json
+"simplefileheaders.templates": [{
+    "text": [
+        "/**",
+        " * this is a multi-line header that will be used by JS and Java files",
+        " */"
+    ],
+    "useWith": ["java", "javascript"]
+}, {
+    "text": [
+        "// this is a single-line header that will be used by everything else"
+    ],
+    "useWith": ["*"]
+}],
+```
 
-## Requirements
+* `text`: an array of strings, each string representing a line
+  * variables can be added using `{MY_VAR_NAME}`, see [Using Variables](#using-variables) for more information
+* `useWith`: an array of language IDs to use this template with - see [VS Code Language Identifiers](https://code.visualstudio.com/docs/languages/identifiers) for more information
+  * you can use "\*" to indicate that the template should be used if a template with a more specific language ID can't be found
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Using Variables
+
+Variables are defined using the `simplefileheaders.variables` setting. Here is an example:
+
+```json
+"simplefileheaders.templates": [{
+    "text": [
+        "/**",
+        " * this header uses variables:",
+        " * Year: {YEAR}",
+        " * Company: {COMPANY}",
+        " */"
+    ],
+    "useWith": ["java", "javascript"]
+}],
+"simplefileheaders.variables": {
+    "YEAR": "2018",
+    "COMPANY": "My Company"
+}
+```
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+* `simplefileheaders.insertAt`: where to insert the file header, either at the cursor or the start of the file
+* `simplefileheaders.templates`: an array of template definitions, see [Defining Templates](#defining-templates)
+* `simplefileheaders.variables`: variables that will be replaced when found in templates, see [Using Variables](#using-variables)

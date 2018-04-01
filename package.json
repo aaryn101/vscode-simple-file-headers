@@ -2,6 +2,13 @@
   "name": "simple-file-headers",
   "displayName": "Simple File Headers",
   "description": "Simple, but flexible, extension for adding file headers.",
+  "keywords": ["file header", "header"],
+  "icon": "./sfh_logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aaryn101/vscode-simple-file-headers.git"
+  },
+  "license": "MIT",
   "version": "0.0.1",
   "publisher": "acsoft",
   "engines": {
