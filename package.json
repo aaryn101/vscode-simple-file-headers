@@ -1,0 +1,55 @@
+{
+  "name": "simple-file-headers",
+  "displayName": "Simple File Headers",
+  "description": "Simple, but flexible, extension for adding file headers.",
+  "version": "0.0.1",
+  "publisher": "acsoft",
+  "engines": {
+    "vscode": "^1.21.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onCommand:extension.insertFileHeader"],
+  "main": "./src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.insertFileHeader",
+        "title": "Insert Simple File Header"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Simple File Headers configuration",
+      "properties": {
+        "simplefileheaders.insertAt": {
+          "type": "string",
+          "enum": ["cursor", "startOfFile"],
+          "default": "cursor",
+          "description": "Where to insert the file header"
+        },
+        "simplefileheaders.templates": {
+          "type": "array",
+          "default": [],
+          "description": "Define file header templates"
+        },
+        "simplefileheaders.variables": {
+          "type": "object",
+          "default": {},
+          "description": "Variables that will be replaced in templates"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "precommit": "pretty-quick --staged",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "eslint": "^4.11.0",
+    "husky": "^0.14.3",
+    "prettier": "^1.11.1",
+    "pretty-quick": "^1.4.1",
+    "vscode": "^1.1.6"
+  }
+}
