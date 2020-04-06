@@ -1,18 +1,18 @@
 const vscode = require("vscode");
-const { Position } = vscode;
+const { Position, window } = vscode;
 
 exports.insertIntoEditor = insertIntoEditor;
 
-function insertIntoEditor(editor) {
+async function insertIntoEditor(editor) {
   let config = vscode.workspace.getConfiguration("simplefileheaders");
-  editor.edit(editBuilder => {
-    let position = getPositionToInsertAt(editor, config);
-    let text = getTextToInsert(editor, config);
+  let text = await getTextToInsert(editor, config);
 
-    if (text) {
+  if (text) {
+    editor.edit(async (editBuilder) => {
+      let position = getPositionToInsertAt(editor, config);
       editBuilder.insert(position, text);
-    }
-  });
+    });
+  }
 }
 
 function getPositionToInsertAt(editor, config) {
@@ -31,35 +31,76 @@ function getPositionToInsertAt(editor, config) {
   return position;
 }
 
-function getTextToInsert(editor, config) {
+async function getTextToInsert(editor, config) {
   let languageId = editor.document.languageId;
-  let template = getTemplateByLanguageId(languageId, config);
+  let templates = getTemplatesByLanguageId(languageId, config);
   let lineEnd = editor.document.eol === vscode.EndOfLine.CRLF ? "\r\n" : "\n";
 
-  if (!template) {
+  let templateToUse;
+
+  if (templates.length === 0) {
     let msgText = [
       `No Simple File Header template defined for language with id: ${languageId}!`,
       "You can define one using the simplefileheaders.templates setting.",
-      "See the extension documentation for more information."
+      "See the extension documentation for more information.",
     ];
     vscode.window.showWarningMessage(msgText.join(" "));
-    return null;
+    return;
+  } else if (templates.length === 1) {
+    templateToUse = templates[0];
+  } else {
+    const selection = await window.showQuickPick(
+      templates.map((t, i) => ({
+        index: i,
+        label: t.name || `Template ${i + 1}`,
+        description: t.useWith.map((u) => (u === "*" ? "all" : u)).join(", "),
+        picked: i === 0,
+      }))
+    );
+
+    if (!selection) {
+      return;
+    }
+
+    templateToUse = templates[selection.index];
   }
 
-  let text = replaceVariables(template.text.join(lineEnd) + lineEnd, config);
-
-  return text;
+  return replaceVariables(templateToUse.text.join(lineEnd) + lineEnd, config);
 }
 
-function getTemplateByLanguageId(id, config) {
-  let templates = config.get("templates");
-  let template = templates.find(t => t.useWith.indexOf(id) !== -1);
+function getTemplatesByLanguageId(id, config) {
+  let configTemplates = config.get("templates");
 
-  if (!template) {
-    template = templates.find(t => t.useWith.indexOf("*") !== -1);
-  }
+  return configTemplates
+    .filter((t) => t.useWith.includes(id) || t.useWith.includes("*"))
+    .sort((a, b) => {
+      const getRelevance = (template) => {
+        let relevance;
 
-  return template;
+        if (template.useWith.length === 1 && template.useWith[0] === id) {
+          relevance = 5;
+        } else if (template.useWith.includes(id)) {
+          relevance = 3;
+        } else if (template.useWith.includes("*")) {
+          relevance = 1;
+        }
+
+        if (template.name) {
+          relevance++;
+        }
+
+        return relevance;
+      };
+
+      const relevanceOfA = getRelevance(a);
+      const relevanceOfB = getRelevance(b);
+
+      if (relevanceOfA === relevanceOfB && a.name && b.name) {
+        return a.name.localeCompare(b.name);
+      } else {
+        return relevanceOfB - relevanceOfA;
+      }
+    });
 }
 
 function replaceVariables(text, config) {

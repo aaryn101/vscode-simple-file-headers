@@ -2,20 +2,27 @@
   "name": "simple-file-headers",
   "displayName": "Simple File Headers",
   "description": "Simple, but flexible, extension for adding file headers.",
-  "keywords": ["file header", "header"],
-  "icon": "./sfh_logo.png",
+  "keywords": [
+    "file header",
+    "header"
+  ],
+  "icon": "sfh_logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/aaryn101/vscode-simple-file-headers.git"
   },
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "acsoft",
   "engines": {
     "vscode": "^1.21.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["onCommand:extension.insertFileHeader"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.insertFileHeader"
+  ],
   "main": "./src/extension",
   "contributes": {
     "commands": [
@@ -26,11 +33,14 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Simple File Headers configuration",
+      "title": "Simple File Headers",
       "properties": {
         "simplefileheaders.insertAt": {
           "type": "string",
-          "enum": ["cursor", "startOfFile"],
+          "enum": [
+            "cursor",
+            "startOfFile"
+          ],
           "default": "cursor",
           "description": "Where to insert the file header"
         },
@@ -48,15 +58,15 @@
     }
   },
   "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install",
     "precommit": "pretty-quick --staged",
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "eslint": "^4.11.0",
-    "husky": "^0.14.3",
-    "prettier": "^1.11.1",
-    "pretty-quick": "^1.4.1",
-    "vscode": "^1.1.6"
+    "@types/vscode": "1.21.0",
+    "eslint": "^6.8.0",
+    "husky": "^4.2.3",
+    "prettier": "^2.0.4",
+    "pretty-quick": "^2.0.1",
+    "vscode-test": "^1.3.0"
   }
 }
